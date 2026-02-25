@@ -2,7 +2,12 @@
   "name": "agentio",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "bun@1.3.3",
   "description": "Agent OS template — harness-engineered, control-loop governed autonomous development system",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -19,9 +24,5 @@
     "typescript": "^5.7.0",
     "prettier": "^3.5.0",
     "@types/node": "^22.0.0"
-  },
-  "packageManager": "pnpm@9.15.0",
-  "engines": {
-    "node": ">=22.0.0"
   }
 }

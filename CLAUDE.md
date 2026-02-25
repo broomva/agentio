@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This is **agentio**, a harness-engineered, control-loop governed template for autonomous agent development. It's a TurboRepo monorepo with TypeScript, pnpm, and Bun.
+This is **agentio**, a harness-engineered, control-loop governed template for autonomous agent development. It's a TurboRepo monorepo with TypeScript and Bun.
 
 ## Before Making Any Changes
 

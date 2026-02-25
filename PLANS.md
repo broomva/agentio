@@ -11,7 +11,7 @@ Establish the harness-engineered, control-loop governed template repo with all s
 
 ### What We Have
 
-- TurboRepo monorepo with pnpm workspaces
+- TurboRepo monorepo with bun workspaces
 - Full harness engineering artifacts (AGENTS.md, Makefile.harness, CI workflows)
 - Control metalayer (METALAYER.md, .control/ primitives, audit scripts)
 - Architecture documentation with strict module boundaries
@@ -51,8 +51,8 @@ Establish the harness-engineered, control-loop governed template repo with all s
 
 | Decision | Rationale |
 |----------|-----------|
-| TurboRepo monorepo | Shared types, incremental builds, single CI |
-| Bun runtime | Fast startup, native TypeScript, Bun.spawn for subprocesses |
+| TurboRepo + Bun monorepo | Shared types, incremental builds, single CI, fast runtime |
+| Bun runtime + package manager | Fast startup, native TypeScript, Bun.spawn, built-in workspaces |
 | Protocol-first | All schemas defined before implementation prevents drift |
 | Content-addressed artifacts | Immutable, deduplicable, replay-friendly |
 | Policy as data (YAML) | Auditable, versionable, machine-readable |

@@ -12,16 +12,12 @@ rm -rf node_modules/.cache .turbo dist/
 
 # Step 2: Reinstall dependencies
 echo "Reinstalling dependencies..."
-if [ -f pnpm-lock.yaml ]; then
-  pnpm install --frozen-lockfile
-elif [ -f package-lock.json ]; then
-  npm ci
-fi
+bun install
 
 # Step 3: Rebuild
 echo "Rebuilding..."
 if [ -f turbo.json ]; then
-  pnpm turbo run build --no-daemon --force
+  bunx turbo run build --no-daemon --force
 fi
 
 # Step 4: Run smoke check

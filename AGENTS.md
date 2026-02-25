@@ -6,7 +6,7 @@
 ## Repository Identity
 
 - **Name:** agentio (Agent OS template)
-- **Stack:** TypeScript, TurboRepo monorepo, pnpm, Bun runtime
+- **Stack:** TypeScript, TurboRepo monorepo, Bun runtime
 - **Purpose:** Harness-engineered, control-loop governed autonomous development system
 
 ## Harness Commands

@@ -6,12 +6,12 @@ cd "$root"
 
 echo "--- Running tests ---"
 if [ -f turbo.json ]; then
-  pnpm turbo run test --no-daemon 2>&1 || {
+  bunx turbo run test --no-daemon 2>&1 || {
     echo "Tests failed." >&2
     exit 1
   }
 elif [ -f package.json ] && grep -q '"test"' package.json; then
-  pnpm test
+  bun test
 else
   echo "No test configuration found."
   exit 0

@@ -5,7 +5,7 @@ version: "1.0"
 
 layout:
   type: turborepo_monorepo
-  package_manager: pnpm
+  package_manager: bun
   runtime: bun
 
   directories:
@@ -59,7 +59,7 @@ layout:
       - package.json
       - turbo.json
       - tsconfig.base.json
-      - pnpm-workspace.yaml
+      - bun.lock
 
 scaling:
   when_to_split:

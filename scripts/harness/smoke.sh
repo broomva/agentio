@@ -6,7 +6,7 @@ cd "$root"
 
 echo "--- Smoke: build ---"
 if [ -f turbo.json ]; then
-  pnpm turbo run build --no-daemon 2>&1 || {
+  bunx turbo run build --no-daemon 2>&1 || {
     echo "Build failed." >&2
     exit 1
   }

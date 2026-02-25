@@ -25,7 +25,7 @@ check: lint typecheck
 
 build:
 	@echo "==> Building all packages..."
-	@pnpm turbo run build
+	@bunx turbo run build
 
 ci: smoke test check
 	@echo "==> CI pipeline complete."

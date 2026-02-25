@@ -6,12 +6,12 @@ cd "$root"
 
 echo "--- Running type checks ---"
 if [ -f turbo.json ]; then
-  pnpm turbo run typecheck --no-daemon 2>&1 || {
+  bunx turbo run typecheck --no-daemon 2>&1 || {
     echo "Typecheck failed." >&2
     exit 1
   }
 elif [ -f tsconfig.json ] || [ -f tsconfig.base.json ]; then
-  npx tsc --noEmit
+  bunx tsc --noEmit
 else
   echo "No TypeScript configuration found; skipping."
   exit 0
