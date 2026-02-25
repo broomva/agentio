@@ -343,6 +343,44 @@ export function isArtifactHandle(s: string): s is ArtifactHandle {
   return s.startsWith(ARTIFACT_SCHEME);
 }
 
+// ─── Re-exports: Schema & State types ────────────────────────────────────────
+
+export type {
+  FieldSchema,
+  EntitySchema,
+  CapabilitySchema,
+  ComponentSchema,
+  ViewSchema,
+  MemorySchema,
+  GovernanceDefaults,
+  AppSchema,
+} from "./schema.js";
+
+export {
+  FIELD_TYPES,
+  STORAGE_TYPES,
+  CONTROLLER_MODES,
+  validateAppSchema,
+} from "./schema.js";
+
+export type {
+  Decision,
+  BudgetUsage,
+  AgentState,
+  SessionState,
+  RunIndexEntry,
+  RunIndex,
+} from "./state.js";
+
+export {
+  AGENT_MODES,
+  INTERFACE_TYPES,
+  DECISION_OUTCOMES,
+  validateAgentState,
+  validateSessionState,
+  validateRunIndex,
+} from "./state.js";
+
 /** Validate a ControlState at runtime. */
 export function validateControlState(obj: unknown): ValidationResult {
   const errors: string[] = [];

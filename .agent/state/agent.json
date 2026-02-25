@@ -1,0 +1,12 @@
+{
+  "mode": "idle",
+  "current_objective": null,
+  "working_memory_keys": [],
+  "recent_decisions": [],
+  "cumulative_budget": {
+    "elapsed_ms": 0,
+    "tokens_used": 0,
+    "tool_calls": 0,
+    "artifacts_mb": 0
+  }
+}

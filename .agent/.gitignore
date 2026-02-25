@@ -1,0 +1,4 @@
+# Ignore generated/transient agent state
+artifacts/
+runs/*.jsonl
+memory/working/

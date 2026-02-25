@@ -1,0 +1,246 @@
+{
+  "name": "agent-os",
+  "version": "1.0.0",
+  "entities": [
+    {
+      "name": "Run",
+      "description": "An agent run — tracks execution of an objective",
+      "fields": [
+        { "name": "run_id", "type": "string", "required": true, "description": "Unique run identifier" },
+        { "name": "agent_id", "type": "string", "required": true, "description": "Agent that owns this run" },
+        { "name": "objective", "type": "string", "required": true, "description": "What this run aims to accomplish" },
+        { "name": "status", "type": "string", "required": true, "description": "Current run status" },
+        { "name": "started_at", "type": "date", "required": false, "description": "When the run started" },
+        { "name": "finished_at", "type": "date", "required": false, "description": "When the run finished" }
+      ],
+      "storage": "state"
+    },
+    {
+      "name": "Artifact",
+      "description": "A content-addressed output blob",
+      "fields": [
+        { "name": "handle", "type": "string", "required": true, "description": "artifact:// URI" },
+        { "name": "size", "type": "number", "required": true, "description": "Size in bytes" },
+        { "name": "mime", "type": "string", "required": true, "description": "MIME type" },
+        { "name": "created_at", "type": "date", "required": true, "description": "Creation timestamp" },
+        { "name": "run_id", "type": "reference", "required": true, "reference": "Run", "description": "Run that created this artifact" }
+      ],
+      "storage": "artifact"
+    },
+    {
+      "name": "PolicyRule",
+      "description": "A governance rule that constrains agent behavior",
+      "fields": [
+        { "name": "action", "type": "string", "required": true, "description": "Action pattern" },
+        { "name": "scope", "type": "string", "required": true, "description": "Scope pattern" },
+        { "name": "decision", "type": "string", "required": true, "description": "ALLOW, DENY, or REQUIRE_APPROVAL" },
+        { "name": "reason", "type": "string", "required": false, "description": "Human-readable reason" }
+      ],
+      "storage": "state"
+    },
+    {
+      "name": "AuditResult",
+      "description": "A harness or control audit outcome",
+      "fields": [
+        { "name": "audit_type", "type": "string", "required": true, "description": "harness or control" },
+        { "name": "passed", "type": "boolean", "required": true, "description": "Whether the audit passed" },
+        { "name": "failures", "type": "number", "required": true, "description": "Number of failures" },
+        { "name": "timestamp", "type": "date", "required": true, "description": "When the audit ran" }
+      ],
+      "storage": "state"
+    },
+    {
+      "name": "MemoryEntry",
+      "description": "A persistent fact in agent memory",
+      "fields": [
+        { "name": "key", "type": "string", "required": true, "description": "Memory key" },
+        { "name": "value", "type": "string", "required": true, "description": "Memory value" },
+        { "name": "category", "type": "string", "required": false, "description": "Category for organization" },
+        { "name": "recorded_at", "type": "date", "required": true, "description": "When this was recorded" }
+      ],
+      "storage": "state"
+    }
+  ],
+  "capabilities": [
+    {
+      "name": "execute_run",
+      "description": "Create and execute an agent run with a given objective",
+      "input": [
+        { "name": "objective", "type": "string", "required": true, "description": "What to accomplish" },
+        { "name": "agent_id", "type": "string", "required": true, "description": "Agent identifier" }
+      ],
+      "output": [
+        { "name": "run_id", "type": "string", "required": true, "description": "Created run ID" },
+        { "name": "status", "type": "string", "required": true, "description": "Final run status" }
+      ],
+      "side_effects": ["writes:state/runs", "emits:run.started", "emits:run.completed"],
+      "requires_approval": false
+    },
+    {
+      "name": "evaluate_policy",
+      "description": "Check if an action is allowed by current policy",
+      "input": [
+        { "name": "action", "type": "string", "required": true, "description": "Action to evaluate" },
+        { "name": "scope", "type": "string", "required": true, "description": "Scope of the action" }
+      ],
+      "output": [
+        { "name": "decision", "type": "string", "required": true, "description": "ALLOW, DENY, or REQUIRE_APPROVAL" },
+        { "name": "reason", "type": "string", "required": true, "description": "Explanation" }
+      ],
+      "side_effects": ["emits:policy.decision"],
+      "requires_approval": false
+    },
+    {
+      "name": "store_artifact",
+      "description": "Persist a content-addressed blob to artifact storage",
+      "input": [
+        { "name": "data", "type": "string", "required": true, "description": "Content to store" },
+        { "name": "mime", "type": "string", "required": true, "description": "MIME type" }
+      ],
+      "output": [
+        { "name": "handle", "type": "string", "required": true, "description": "artifact:// URI" }
+      ],
+      "side_effects": ["writes:artifacts", "emits:artifact.created"],
+      "requires_approval": false
+    },
+    {
+      "name": "query_state",
+      "description": "Read current control or agent state",
+      "input": [
+        { "name": "state_key", "type": "string", "required": true, "description": "State key to read (agent, session, control)" }
+      ],
+      "output": [
+        { "name": "state", "type": "string", "required": true, "description": "JSON state object" }
+      ],
+      "side_effects": [],
+      "requires_approval": false
+    },
+    {
+      "name": "audit_harness",
+      "description": "Run harness and control audit scripts",
+      "input": [
+        { "name": "audit_type", "type": "string", "required": false, "description": "harness or control (default: both)" }
+      ],
+      "output": [
+        { "name": "passed", "type": "boolean", "required": true, "description": "Whether the audit passed" },
+        { "name": "failures", "type": "number", "required": true, "description": "Number of failures" }
+      ],
+      "side_effects": ["reads:filesystem", "emits:metric.recorded"],
+      "requires_approval": false
+    },
+    {
+      "name": "update_memory",
+      "description": "Write a key-value pair to persistent memory",
+      "input": [
+        { "name": "key", "type": "string", "required": true, "description": "Memory key" },
+        { "name": "value", "type": "string", "required": true, "description": "Memory value" },
+        { "name": "category", "type": "string", "required": false, "description": "Category" }
+      ],
+      "output": [
+        { "name": "key", "type": "string", "required": true, "description": "Stored key" }
+      ],
+      "side_effects": ["writes:memory"],
+      "requires_approval": false
+    },
+    {
+      "name": "search_memory",
+      "description": "Search persistent memory by key or category",
+      "input": [
+        { "name": "query", "type": "string", "required": true, "description": "Search query" },
+        { "name": "category", "type": "string", "required": false, "description": "Filter by category" }
+      ],
+      "output": [
+        { "name": "results", "type": "list", "required": true, "description": "Matching memory entries" }
+      ],
+      "side_effects": [],
+      "requires_approval": false
+    }
+  ],
+  "views": [
+    {
+      "name": "dashboard",
+      "route": "/",
+      "description": "Agent dashboard — mode, active runs, recent decisions, audit status",
+      "data_sources": ["Run", "AuditResult"],
+      "actions": ["execute_run", "audit_harness"],
+      "layout": [
+        { "type": "text", "props": { "content": "Agent OS Dashboard", "variant": "heading" } },
+        { "type": "detail", "props": {}, "bind": "agent_state" },
+        { "type": "list", "props": { "entity": "Run", "limit": 5 }, "bind": "recent_runs" }
+      ]
+    },
+    {
+      "name": "run_history",
+      "route": "/runs",
+      "description": "List of all runs with status, duration, and error counts",
+      "data_sources": ["Run"],
+      "actions": ["execute_run"],
+      "layout": [
+        { "type": "list", "props": { "entity": "Run" }, "bind": "all_runs" }
+      ]
+    },
+    {
+      "name": "run_detail",
+      "route": "/runs/:id",
+      "description": "Full event log and details for a specific run",
+      "data_sources": ["Run"],
+      "actions": [],
+      "layout": [
+        { "type": "detail", "props": { "entity": "Run" }, "bind": "run" },
+        { "type": "list", "props": { "variant": "events" }, "bind": "run_events" }
+      ]
+    },
+    {
+      "name": "policy_viewer",
+      "route": "/policy",
+      "description": "Current policy rules and recent evaluations",
+      "data_sources": ["PolicyRule"],
+      "actions": ["evaluate_policy"],
+      "layout": [
+        { "type": "list", "props": { "entity": "PolicyRule" }, "bind": "rules" }
+      ]
+    },
+    {
+      "name": "memory_browser",
+      "route": "/memory",
+      "description": "View and search persistent memory",
+      "data_sources": ["MemoryEntry"],
+      "actions": ["update_memory", "search_memory"],
+      "layout": [
+        { "type": "list", "props": { "entity": "MemoryEntry" }, "bind": "entries" },
+        { "type": "form", "props": { "capability": "search_memory" } }
+      ]
+    },
+    {
+      "name": "artifacts",
+      "route": "/artifacts",
+      "description": "List of content-addressed artifacts with metadata",
+      "data_sources": ["Artifact"],
+      "actions": ["store_artifact"],
+      "layout": [
+        { "type": "list", "props": { "entity": "Artifact" }, "bind": "all_artifacts" }
+      ]
+    }
+  ],
+  "memory": {
+    "core_fields": [
+      { "name": "key", "type": "string", "required": true, "description": "Fact identifier" },
+      { "name": "value", "type": "string", "required": true, "description": "Fact value" },
+      { "name": "category", "type": "string", "required": false, "description": "Fact category" },
+      { "name": "recorded_at", "type": "date", "required": true, "description": "When recorded" }
+    ],
+    "working_ttl_ms": 3600000,
+    "max_core_entries": 1000
+  },
+  "governance": {
+    "policy_profile": "ci_safe",
+    "budgets": {
+      "max_time_ms": 3600000,
+      "max_tokens": 100000,
+      "max_tool_calls": 50,
+      "max_artifacts_mb": 100
+    },
+    "max_concurrent_runs": 3,
+    "controller_mode": "autonomous"
+  }
+}

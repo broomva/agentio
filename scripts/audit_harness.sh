@@ -93,7 +93,7 @@ echo "--- Runtime correctness checks ---"
 
 # Check: kernel packages have test files
 kernel_test_ok=true
-for pkg in protocol kernel-run kernel-policy kernel-artifact kernel-state; do
+for pkg in protocol kernel-run kernel-policy kernel-artifact kernel-state kernel-schema; do
   pkg_dir="$target_path/packages/$pkg"
   if [ -d "$pkg_dir" ]; then
     test_count=$(find "$pkg_dir/__tests__" -name '*.test.ts' 2>/dev/null | wc -l | tr -d ' ')
@@ -135,6 +135,29 @@ if [ "$kernel_impure" = false ]; then
   ok "Kernel purity: no node:fs/node:path imports in kernel-* packages"
 fi
 
+# Check: .agent/ structure
+echo
+echo "--- Agent filesystem checks ---"
+if [ -f "$target_path/.agent/schema.json" ]; then
+  # Validate it's valid JSON
+  if python3 -c "import json; json.load(open('$target_path/.agent/schema.json'))" 2>/dev/null; then
+    ok ".agent/schema.json is valid JSON"
+  else
+    fail ".agent/schema.json is not valid JSON"
+  fi
+else
+  fail ".agent/schema.json not found"
+fi
+
+for agent_file in state/agent.json state/session.json runs/index.json memory/core.json; do
+  if [ -f "$target_path/.agent/$agent_file" ]; then
+    ok ".agent/$agent_file"
+  else
+    fail ".agent/$agent_file not found"
+  fi
+done
+
+echo
 # Check: integration test package exists
 if [ -d "$target_path/packages/kernel-integration" ] && [ -d "$target_path/packages/kernel-integration/__tests__" ]; then
   int_test_count=$(find "$target_path/packages/kernel-integration/__tests__" -name '*.test.ts' 2>/dev/null | wc -l | tr -d ' ')

@@ -1,14 +1,25 @@
 /**
- * @agentio/kernel-state — Control state aggregation
+ * @agentio/kernel-state — State aggregation
  *
  * Aggregates RunState[], artifact count, and policy violations
- * into a ControlState snapshot for the control metalayer.
+ * into ControlState, AgentState, SessionState, and RunIndex snapshots.
  *
  * Pure logic — no I/O.
  */
 
-import type { ControlState } from "@agentio/protocol";
+import type {
+  ControlState,
+  AgentState,
+  SessionState,
+  RunIndex,
+  RunIndexEntry,
+  BudgetUsage,
+  Decision,
+} from "@agentio/protocol";
+import { generateId, now } from "@agentio/protocol";
 import type { RunState } from "@agentio/kernel-run";
+
+// ─── Control State ──────────────────────────────────────────────────────────
 
 export interface StateInput {
   runs: RunState[];
@@ -51,5 +62,86 @@ export function emptyControlState(): ControlState {
     completed_runs: 0,
     artifact_count: 0,
     policy_violations: 0,
+  };
+}
+
+// ─── Agent State ────────────────────────────────────────────────────────────
+
+export interface AgentStateInput {
+  mode?: AgentState["mode"];
+  currentObjective?: string | null;
+  workingMemoryKeys?: string[];
+  recentDecisions?: Decision[];
+  cumulativeBudget?: Partial<BudgetUsage>;
+}
+
+/** Build an AgentState from input. */
+export function buildAgentState(input: AgentStateInput = {}): AgentState {
+  return {
+    mode: input.mode ?? "idle",
+    current_objective: input.currentObjective ?? null,
+    working_memory_keys: input.workingMemoryKeys ?? [],
+    recent_decisions: input.recentDecisions ?? [],
+    cumulative_budget: {
+      elapsed_ms: input.cumulativeBudget?.elapsed_ms ?? 0,
+      tokens_used: input.cumulativeBudget?.tokens_used ?? 0,
+      tool_calls: input.cumulativeBudget?.tool_calls ?? 0,
+      artifacts_mb: input.cumulativeBudget?.artifacts_mb ?? 0,
+    },
+  };
+}
+
+/** Create an empty AgentState. */
+export function emptyAgentState(): AgentState {
+  return buildAgentState();
+}
+
+// ─── Session State ──────────────────────────────────────────────────────────
+
+export interface SessionInput {
+  agentId: string;
+  interfaceType?: SessionState["interface"];
+  sessionId?: string;
+  context?: Record<string, unknown>;
+}
+
+/** Build a SessionState from input. */
+export function buildSessionState(input: SessionInput): SessionState {
+  const ts = now();
+  return {
+    session_id: input.sessionId ?? generateId(),
+    agent_id: input.agentId,
+    interface: input.interfaceType ?? "cli",
+    started_at: ts,
+    last_activity_at: ts,
+    active_run_id: null,
+    context: input.context ?? {},
+  };
+}
+
+// ─── Run Index ──────────────────────────────────────────────────────────────
+
+/** Build a RunIndex from a list of RunStates. */
+export function buildRunIndex(runs: RunState[]): RunIndex {
+  const entries: RunIndexEntry[] = runs.map((r) => ({
+    run_id: r.envelope.run_id,
+    agent_id: r.envelope.agent_id,
+    objective: r.envelope.objective,
+    status: r.status,
+    started_at: r.started_at,
+    finished_at: r.finished_at,
+  }));
+
+  return {
+    version: 1,
+    entries,
+  };
+}
+
+/** Create an empty RunIndex. */
+export function emptyRunIndex(): RunIndex {
+  return {
+    version: 1,
+    entries: [],
   };
 }
