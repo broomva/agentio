@@ -1,13 +1,12 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { loadSkill, listSkills, invokeSkill } from "../src/index.js";
 
 describe("skills-runtime", () => {
   it("loadSkill returns null for unknown skills", () => {
-    assert.equal(loadSkill("nonexistent"), null);
+    expect(loadSkill("nonexistent")).toBeNull();
   });
 
   it("listSkills returns an empty array", () => {
-    assert.deepEqual(listSkills(), []);
+    expect(listSkills()).toEqual([]);
   });
 });

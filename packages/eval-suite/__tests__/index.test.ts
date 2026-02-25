@@ -1,5 +1,4 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { runEval, runSuite } from "../src/index.js";
 import type { EvalCase } from "../src/index.js";
 
@@ -12,9 +11,9 @@ describe("eval-suite", () => {
       maxDurationMs: 5000,
     };
     const result = await runEval(evalCase);
-    assert.equal(result.caseId, "test-001");
-    assert.equal(result.passed, false);
-    assert.equal(result.notes, "not implemented");
+    expect(result.caseId).toBe("test-001");
+    expect(result.passed).toBe(false);
+    expect(result.notes).toBe("not implemented");
   });
 
   it("runSuite processes all cases", async () => {
@@ -23,6 +22,6 @@ describe("eval-suite", () => {
       { id: "b", objective: "obj-b", expectedOutcome: "pass", maxDurationMs: 1000 },
     ];
     const results = await runSuite(cases);
-    assert.equal(results.length, 2);
+    expect(results).toHaveLength(2);
   });
 });

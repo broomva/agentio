@@ -1,5 +1,4 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { execute, listTools } from "../src/index.js";
 import type { ToolContract } from "@agentio/protocol";
 
@@ -14,11 +13,11 @@ describe("driver-exec", () => {
       idempotent: true,
     };
     const result = await execute(tool, {});
-    assert.equal(result.exitCode, 0);
-    assert.equal(result.durationMs, 0);
+    expect(result.exitCode).toBe(0);
+    expect(result.durationMs).toBe(0);
   });
 
   it("listTools returns an empty array", () => {
-    assert.deepEqual(listTools(), []);
+    expect(listTools()).toEqual([]);
   });
 });

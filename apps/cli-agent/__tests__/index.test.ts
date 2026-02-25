@@ -1,9 +1,8 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { main } from "../src/index.js";
 
 describe("cli-agent", () => {
   it("main is a function", () => {
-    assert.equal(typeof main, "function");
+    expect(typeof main).toBe("function");
   });
 });

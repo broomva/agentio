@@ -1,5 +1,4 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { handleMessage } from "../src/index.js";
 import type { ChatMessage } from "../src/index.js";
 
@@ -11,7 +10,7 @@ describe("chat-bot", () => {
       timestamp: new Date().toISOString(),
     };
     const reply = await handleMessage(msg);
-    assert.equal(reply.role, "assistant");
-    assert.ok(reply.content);
+    expect(reply.role).toBe("assistant");
+    expect(reply.content).toBeTruthy();
   });
 });

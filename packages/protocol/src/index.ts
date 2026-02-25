@@ -189,6 +189,19 @@ export interface StructuredError {
   recoverable: boolean;
 }
 
+// ─── Control State ──────────────────────────────────────────────────────
+
+export interface ControlState {
+  version: number;
+  controller_mode: "autonomous" | "supervised" | "manual";
+  last_audit_at: string | null;
+  last_entropy_review_at: string | null;
+  active_runs: number;
+  completed_runs: number;
+  artifact_count: number;
+  policy_violations: number;
+}
+
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 export const ARTIFACT_SCHEME = "artifact://";
@@ -328,4 +341,30 @@ export function validateEvent(obj: unknown): ValidationResult {
 /** Check if a string is a valid artifact handle. */
 export function isArtifactHandle(s: string): s is ArtifactHandle {
   return s.startsWith(ARTIFACT_SCHEME);
+}
+
+/** Validate a ControlState at runtime. */
+export function validateControlState(obj: unknown): ValidationResult {
+  const errors: string[] = [];
+  if (typeof obj !== "object" || obj === null) {
+    return { valid: false, errors: ["must be an object"] };
+  }
+  const o = obj as Record<string, unknown>;
+  if (typeof o.version !== "number")
+    errors.push("version must be a number");
+  if (typeof o.controller_mode !== "string" || !["autonomous", "supervised", "manual"].includes(o.controller_mode))
+    errors.push("controller_mode must be one of: autonomous, supervised, manual");
+  if (o.last_audit_at !== null && typeof o.last_audit_at !== "string")
+    errors.push("last_audit_at must be a string or null");
+  if (o.last_entropy_review_at !== null && typeof o.last_entropy_review_at !== "string")
+    errors.push("last_entropy_review_at must be a string or null");
+  if (typeof o.active_runs !== "number" || o.active_runs < 0)
+    errors.push("active_runs must be a non-negative number");
+  if (typeof o.completed_runs !== "number" || o.completed_runs < 0)
+    errors.push("completed_runs must be a non-negative number");
+  if (typeof o.artifact_count !== "number" || o.artifact_count < 0)
+    errors.push("artifact_count must be a non-negative number");
+  if (typeof o.policy_violations !== "number" || o.policy_violations < 0)
+    errors.push("policy_violations must be a non-negative number");
+  return errors.length === 0 ? { valid: true } : { valid: false, errors };
 }

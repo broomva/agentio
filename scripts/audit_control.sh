@@ -97,6 +97,40 @@ check_contains ".control/commands.yaml" "smoke:" "commands.yaml: smoke command"
 check_contains ".control/commands.yaml" "ci:" "commands.yaml: ci command"
 check_contains "Makefile.control" "^recover:" "Makefile.control: recover target"
 
+# State validation
+echo
+echo "--- State validation ---"
+
+state_file="$target_path/.control/state.json"
+if [ -f "$state_file" ]; then
+  ok ".control/state.json exists"
+
+  # Check valid JSON
+  if python3 -c "import json; json.load(open('$state_file'))" 2>/dev/null; then
+    ok ".control/state.json is valid JSON"
+  else
+    fail ".control/state.json is not valid JSON"
+  fi
+
+  # Check required fields
+  required_fields=("version" "controller_mode" "last_audit_at")
+  for field in "${required_fields[@]}"; do
+    if python3 -c "
+import json, sys
+with open('$state_file') as f:
+    state = json.load(f)
+if '$field' not in state:
+    sys.exit(1)
+" 2>/dev/null; then
+      ok "state.json has required field: $field"
+    else
+      fail "state.json missing required field: $field"
+    fi
+  done
+else
+  fail ".control/state.json not found"
+fi
+
 if [ "$strict" -eq 1 ]; then
   echo
   echo "--- Strict checks ---"

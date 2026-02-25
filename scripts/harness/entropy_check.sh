@@ -58,3 +58,25 @@ if [ "$failures" -gt 0 ]; then
   exit 1
 fi
 echo "Entropy check passed."
+
+# Update state.json on success
+state_file="$root_dir/.control/state.json"
+if [ -f "$state_file" ]; then
+  now=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  tmp_file=$(mktemp)
+  if command -v python3 &>/dev/null; then
+    python3 -c "
+import json
+with open('$state_file') as f:
+    state = json.load(f)
+state['last_entropy_review_at'] = '$now'
+with open('$tmp_file', 'w') as f:
+    json.dump(state, f, indent=2)
+    f.write('\n')
+"
+    mv "$tmp_file" "$state_file"
+    echo "Updated .control/state.json last_entropy_review_at → $now"
+  else
+    rm -f "$tmp_file"
+  fi
+fi

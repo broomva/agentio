@@ -1,38 +1,55 @@
 /**
- * @agentio/kernel-state — State manager
+ * @agentio/kernel-state — Control state aggregation
  *
- * Aggregate run, artifact, and event state into a coherent view.
- * Provides a unified query surface over the kernel subsystems.
+ * Aggregates RunState[], artifact count, and policy violations
+ * into a ControlState snapshot for the control metalayer.
+ *
+ * Pure logic — no I/O.
  */
 
-import type { RunEnvelope, RunSummary, ArtifactMetadata } from "@agentio/protocol";
-import { createRun, finaliseRun } from "@agentio/kernel-run";
-import { metadata } from "@agentio/kernel-artifact";
+import type { ControlState } from "@agentio/protocol";
+import type { RunState } from "@agentio/kernel-run";
 
-export interface KernelState {
-  activeRuns: Map<string, RunEnvelope>;
-  completedRuns: Map<string, RunSummary>;
-  artifacts: Map<string, ArtifactMetadata>;
+export interface StateInput {
+  runs: RunState[];
+  artifactCount: number;
+  policyViolations: number;
+  controllerMode?: ControlState["controller_mode"];
+  lastAuditAt?: string | null;
+  lastEntropyReviewAt?: string | null;
 }
 
-/** Placeholder: initialise an empty kernel state */
-export function initState(): KernelState {
+/** Build a ControlState snapshot from kernel subsystem data. */
+export function buildControlState(input: StateInput): ControlState {
+  const activeRuns = input.runs.filter(
+    (r) => r.status === "pending" || r.status === "running",
+  ).length;
+  const completedRuns = input.runs.filter(
+    (r) => r.status === "completed" || r.status === "failed" || r.status === "cancelled",
+  ).length;
+
   return {
-    activeRuns: new Map(),
-    completedRuns: new Map(),
-    artifacts: new Map(),
+    version: 1,
+    controller_mode: input.controllerMode ?? "autonomous",
+    last_audit_at: input.lastAuditAt ?? null,
+    last_entropy_review_at: input.lastEntropyReviewAt ?? null,
+    active_runs: activeRuns,
+    completed_runs: completedRuns,
+    artifact_count: input.artifactCount,
+    policy_violations: input.policyViolations,
   };
 }
 
-/** Placeholder: get the current state snapshot */
-export function snapshot(_state: KernelState): {
-  activeRunCount: number;
-  completedRunCount: number;
-  artifactCount: number;
-} {
+/** Create an empty ControlState with sensible defaults. */
+export function emptyControlState(): ControlState {
   return {
-    activeRunCount: _state.activeRuns.size,
-    completedRunCount: _state.completedRuns.size,
-    artifactCount: _state.artifacts.size,
+    version: 1,
+    controller_mode: "autonomous",
+    last_audit_at: null,
+    last_entropy_review_at: null,
+    active_runs: 0,
+    completed_runs: 0,
+    artifact_count: 0,
+    policy_violations: 0,
   };
 }

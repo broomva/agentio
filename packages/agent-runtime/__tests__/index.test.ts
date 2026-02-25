@@ -1,5 +1,4 @@
-import { describe, it } from "node:test";
-import assert from "node:assert/strict";
+import { describe, it, expect } from "bun:test";
 import { createAgent, startRun } from "../src/index.js";
 import type { RunEnvelope, PolicyProfile } from "@agentio/protocol";
 
@@ -15,7 +14,7 @@ describe("agent-runtime", () => {
       maxConcurrentRuns: 1,
     };
     const result = createAgent(config);
-    assert.ok(result.agentId);
+    expect(result.agentId).toBeTruthy();
   });
 
   it("startRun returns the run id", async () => {
@@ -31,6 +30,6 @@ describe("agent-runtime", () => {
       timestamp: new Date().toISOString(),
     };
     const result = await startRun("agent-placeholder", envelope);
-    assert.equal(result.runId, "run-agent-001");
+    expect(result.runId).toBe("run-agent-001");
   });
 });

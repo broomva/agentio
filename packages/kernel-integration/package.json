@@ -1,8 +1,8 @@
 {
-  "name": "@agentio/kernel-state",
+  "name": "@agentio/kernel-integration",
   "version": "0.1.0",
   "private": true,
-  "description": "State manager — aggregate run, artifact, and event state into a coherent view",
+  "description": "Integration tests — cross-kernel composition and end-to-end flows",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -13,7 +13,10 @@
   },
   "dependencies": {
     "@agentio/protocol": "workspace:*",
-    "@agentio/kernel-run": "workspace:*"
+    "@agentio/kernel-run": "workspace:*",
+    "@agentio/kernel-policy": "workspace:*",
+    "@agentio/kernel-artifact": "workspace:*",
+    "@agentio/kernel-state": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
