@@ -1,0 +1,44 @@
+version: 1
+setpoints:
+  ci_pass_rate:
+    target: 1.0
+    alert_below: 0.95
+  harness_audit_score:
+    target: 1.0
+    alert_below: 0.80
+  control_audit_score:
+    target: 1.0
+    alert_below: 0.80
+  merge_cycle_time_hours:
+    target: 24
+    alert_above: 48
+  revert_rate:
+    target: 0.03
+    alert_above: 0.08
+  human_intervention_rate:
+    target: 0.20
+    alert_above: 0.40
+  time_to_actionable_failure_minutes:
+    target: 5
+    alert_above: 15
+  policy_violations_per_week:
+    target: 0
+    alert_above: 1
+
+measurements:
+  - name: ci_pass_rate
+    source: ci
+  - name: harness_audit_score
+    source: scripts/audit_harness.sh
+  - name: control_audit_score
+    source: scripts/audit_control.sh
+  - name: merge_cycle_time_hours
+    source: scm
+  - name: revert_rate
+    source: scm
+  - name: human_intervention_rate
+    source: event_log
+  - name: time_to_actionable_failure_minutes
+    source: ci
+  - name: policy_violations_per_week
+    source: event_log

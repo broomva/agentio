@@ -1,0 +1,31 @@
+# Makefile.harness — Deterministic harness commands
+# These targets wrap scripts in scripts/harness/ for single-command execution.
+# Target names are STABLE — do not rename. Internals may change.
+
+.PHONY: smoke test lint typecheck check ci build
+
+smoke:
+	@echo "==> Running smoke check..."
+	@bash scripts/harness/smoke.sh
+
+test:
+	@echo "==> Running tests..."
+	@bash scripts/harness/test.sh
+
+lint:
+	@echo "==> Running linters..."
+	@bash scripts/harness/lint.sh
+
+typecheck:
+	@echo "==> Running type checks..."
+	@bash scripts/harness/typecheck.sh
+
+check: lint typecheck
+	@echo "==> Check complete (lint + typecheck)."
+
+build:
+	@echo "==> Building all packages..."
+	@pnpm turbo run build
+
+ci: smoke test check
+	@echo "==> CI pipeline complete."

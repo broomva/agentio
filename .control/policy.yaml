@@ -1,0 +1,67 @@
+# Control Policy — Machine-readable rules for agent governance
+# All agents and automation must respect these rules.
+
+version: "1.0"
+profile: ci_safe
+
+# Actions that require explicit human approval
+approval_required:
+  - action: git.push
+    scope: "refs/heads/main"
+    reason: "Direct push to main requires human review"
+  - action: git.force_push
+    scope: "*"
+    reason: "Force push is destructive and always requires approval"
+  - action: file.delete
+    scope: "packages/protocol/**"
+    reason: "Protocol changes affect all downstream packages"
+  - action: dependency.remove
+    scope: "*"
+    reason: "Removing dependencies may break downstream"
+  - action: network.egress
+    scope: "*.external"
+    reason: "External API calls require policy allowance"
+
+# Actions explicitly allowed without approval
+allowed:
+  - action: file.read
+    scope: "**/*"
+  - action: file.write
+    scope: "packages/**/*.ts"
+  - action: file.write
+    scope: "apps/**/*.ts"
+  - action: git.commit
+    scope: "refs/heads/*"
+    condition: "make ci passes"
+  - action: git.push
+    scope: "refs/heads/feature/*"
+    condition: "make ci passes"
+  - action: exec.run
+    scope: "scripts/**"
+  - action: exec.run
+    scope: "node_modules/.bin/*"
+
+# Actions explicitly denied
+denied:
+  - action: secret.log
+    scope: "*"
+    reason: "Never log secret values"
+  - action: file.write
+    scope: ".env*"
+    reason: "Environment files are not code-managed"
+  - action: exec.run
+    scope: "rm -rf"
+    reason: "Recursive deletion is prohibited"
+
+# Budget constraints per run
+budgets:
+  max_duration_ms: 3600000    # 1 hour
+  max_token_usage: 100000
+  max_tool_calls: 500
+  max_artifacts_mb: 100
+
+# Escalation thresholds
+escalation:
+  max_retries: 2
+  audit_score_minimum: 80
+  ci_failure_escalation: true

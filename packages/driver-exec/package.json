@@ -1,0 +1,22 @@
+{
+  "name": "@agentio/driver-exec",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Execution driver — sandbox and execute tool calls, capture results",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test __tests__/*.test.ts"
+  },
+  "dependencies": {
+    "@agentio/protocol": "workspace:*",
+    "@agentio/kernel-artifact": "workspace:*",
+    "@agentio/kernel-run": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

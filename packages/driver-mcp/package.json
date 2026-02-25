@@ -1,0 +1,21 @@
+{
+  "name": "@agentio/driver-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "MCP driver — Model Context Protocol transport and tool discovery",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test __tests__/*.test.ts"
+  },
+  "dependencies": {
+    "@agentio/protocol": "workspace:*",
+    "@agentio/kernel-run": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

@@ -1,0 +1,32 @@
+# Makefile.control — Control loop commands
+# These targets wrap scripts in scripts/control/ for governance automation.
+# Target names are STABLE — do not rename.
+
+.PHONY: recover web-e2e cli-e2e audit control-audit control-nightly hooks-install
+
+recover:
+	@echo "==> Attempting automated recovery..."
+	@bash scripts/control/recover.sh
+
+web-e2e:
+	@echo "==> Running web E2E tests..."
+	@bash scripts/control/web_e2e.sh
+
+cli-e2e:
+	@echo "==> Running CLI E2E tests..."
+	@bash scripts/control/cli_e2e.sh
+
+audit:
+	@echo "==> Running harness audit..."
+	@bash scripts/audit_harness.sh .
+
+control-audit:
+	@echo "==> Running control metalayer audit..."
+	@bash scripts/audit_control.sh .
+
+hooks-install:
+	@echo "==> Installing git hooks..."
+	@bash scripts/control/install_hooks.sh
+
+control-nightly: audit control-audit
+	@echo "==> Nightly control audit complete."

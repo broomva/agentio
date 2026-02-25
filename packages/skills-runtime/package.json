@@ -1,0 +1,22 @@
+{
+  "name": "@agentio/skills-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Skills runtime — load, validate, and invoke composable agent skills",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test __tests__/*.test.ts"
+  },
+  "dependencies": {
+    "@agentio/protocol": "workspace:*",
+    "@agentio/kernel-artifact": "workspace:*",
+    "@agentio/driver-exec": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}

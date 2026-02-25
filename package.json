@@ -1,0 +1,27 @@
+{
+  "name": "agentio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent OS template — harness-engineered, control-loop governed autonomous development system",
+  "scripts": {
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "check": "turbo run lint typecheck",
+    "smoke": "make -f Makefile.harness smoke",
+    "audit": "python3 scripts/harness_audit.py .",
+    "control:audit": "python3 scripts/control_audit.py .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "turbo": "^2.4.0",
+    "typescript": "^5.7.0",
+    "prettier": "^3.5.0",
+    "@types/node": "^22.0.0"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

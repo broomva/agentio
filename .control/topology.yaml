@@ -1,0 +1,77 @@
+# Repository Topology — Structure and scaling strategy
+# Defines the physical layout and growth rules for the monorepo.
+
+version: "1.0"
+
+layout:
+  type: turborepo_monorepo
+  package_manager: pnpm
+  runtime: bun
+
+  directories:
+    packages:
+      description: "Shared libraries — protocol, kernel, drivers, runtime"
+      naming: "kebab-case"
+      max_packages: 20
+      rules:
+        - "Each package must have src/index.ts, package.json, tsconfig.json"
+        - "Each package must have __tests__/ with at least one test"
+        - "Dependencies must follow the layer hierarchy (see ARCHITECTURE.md)"
+
+    apps:
+      description: "Deployable applications — CLI, chat bot"
+      naming: "kebab-case"
+      max_packages: 5
+      rules:
+        - "Apps depend on agent-runtime, never on other apps"
+        - "Apps are the only entry points for user interaction"
+
+    scripts:
+      description: "Executable shell scripts for harness and control"
+      subdirectories:
+        harness: "Core harness commands (smoke, test, lint, typecheck)"
+        control: "Control loop commands (recover, e2e, audit wrappers)"
+
+    docs:
+      description: "Architecture and operational documentation"
+      required_files:
+        - ARCHITECTURE.md
+        - OBSERVABILITY.md
+
+    .control:
+      description: "Machine-readable governance files"
+      required_files:
+        - policy.yaml
+        - commands.yaml
+        - topology.yaml
+
+    .github/workflows:
+      description: "CI/CD pipeline definitions"
+
+  root_files:
+    required:
+      - AGENTS.md
+      - PLANS.md
+      - METALAYER.md
+      - Makefile
+      - Makefile.harness
+      - Makefile.control
+      - package.json
+      - turbo.json
+      - tsconfig.base.json
+      - pnpm-workspace.yaml
+
+scaling:
+  when_to_split:
+    - "Package exceeds 2000 LOC → consider splitting"
+    - "Package has more than 5 direct dependents → consider interface extraction"
+    - "Build time exceeds 30s → consider lazy loading or code splitting"
+
+  when_to_merge:
+    - "Two packages always change together → merge them"
+    - "Package has exactly one dependent → consider inlining"
+
+  growth_rules:
+    - "New packages must be justified in PLANS.md before creation"
+    - "Every new package must pass harness audit before merge"
+    - "Topology changes require architecture review"

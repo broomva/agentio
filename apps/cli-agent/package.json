@@ -1,0 +1,20 @@
+{
+  "name": "@agentio/cli-agent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI agent — interactive command-line interface for agent runs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test __tests__/*.test.ts"
+  },
+  "dependencies": {
+    "@agentio/agent-runtime": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
