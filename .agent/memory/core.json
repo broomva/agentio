@@ -1,3 +1,16 @@
 {
-  "entries": []
+  "entries": [
+    {
+      "key": "last_demo",
+      "value": "2026-02-25T18:47:56.976Z",
+      "category": "system",
+      "recorded_at": "2026-02-25T18:47:56.976Z"
+    },
+    {
+      "key": "demo_run_id",
+      "value": "474e1275-46ad-4cf0-b620-84a5c388f6d2",
+      "category": "system",
+      "recorded_at": "2026-02-25T18:47:56.976Z"
+    }
+  ]
 }

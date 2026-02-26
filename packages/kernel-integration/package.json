@@ -16,7 +16,9 @@
     "@agentio/kernel-run": "workspace:*",
     "@agentio/kernel-policy": "workspace:*",
     "@agentio/kernel-artifact": "workspace:*",
-    "@agentio/kernel-state": "workspace:*"
+    "@agentio/kernel-state": "workspace:*",
+    "@agentio/agent-runtime": "workspace:*",
+    "ai": "^6.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0"

@@ -35,7 +35,9 @@ describe("constants", () => {
     expect(EVENT_TYPES).toContain("run.started");
     expect(EVENT_TYPES).toContain("tool.called");
     expect(EVENT_TYPES).toContain("policy.decision");
-    expect(EVENT_TYPES.length).toBe(9);
+    expect(EVENT_TYPES).toContain("llm.step_completed");
+    expect(EVENT_TYPES).toContain("llm.usage");
+    expect(EVENT_TYPES.length).toBe(11);
   });
 
   it("RUN_STATUSES contains all statuses", () => {

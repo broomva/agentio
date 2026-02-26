@@ -55,7 +55,9 @@ export type EventType =
   | "artifact.created"
   | "policy.decision"
   | "policy.approval"
-  | "metric.recorded";
+  | "metric.recorded"
+  | "llm.step_completed"
+  | "llm.usage";
 
 export interface BaseEvent {
   run_id: string;
@@ -120,6 +122,21 @@ export interface MetricRecordedEvent extends BaseEvent {
   unit: string;
 }
 
+export interface LlmStepCompletedEvent extends BaseEvent {
+  event: "llm.step_completed";
+  step_index: number;
+  finish_reason: string;
+  tool_calls: number;
+  usage: import("./chat.js").UsageSnapshot;
+  duration_ms: number;
+}
+
+export interface LlmUsageEvent extends BaseEvent {
+  event: "llm.usage";
+  cumulative: import("./chat.js").UsageSnapshot;
+  step_count: number;
+}
+
 export type AgentEvent =
   | RunStartedEvent
   | RunCompletedEvent
@@ -129,7 +146,9 @@ export type AgentEvent =
   | ArtifactCreatedEvent
   | PolicyDecisionEvent
   | PolicyApprovalEvent
-  | MetricRecordedEvent;
+  | MetricRecordedEvent
+  | LlmStepCompletedEvent
+  | LlmUsageEvent;
 
 // ─── Artifacts ───────────────────────────────────────────────────────────────
 
@@ -218,6 +237,8 @@ export const EVENT_TYPES: readonly EventType[] = [
   "policy.decision",
   "policy.approval",
   "metric.recorded",
+  "llm.step_completed",
+  "llm.usage",
 ] as const;
 
 export const RUN_STATUSES: readonly RunStatus[] = [
@@ -380,6 +401,33 @@ export {
   validateSessionState,
   validateRunIndex,
 } from "./state.js";
+
+// ─── Re-exports: Chat & Streaming types ──────────────────────────────────────
+
+export type {
+  TextPart,
+  ToolCallPart,
+  ToolResultPart,
+  ChatPart,
+  ChatRole,
+  ChatMessage,
+  ToolInvocation,
+  UsageSnapshot,
+  StreamPhase,
+  StreamState,
+  FinishReason,
+  StepRecord,
+} from "./chat.js";
+
+export {
+  CHAT_ROLES,
+  STREAM_PHASES,
+  FINISH_REASONS,
+  emptyUsage,
+  idleStreamState,
+  validateChatMessage,
+  validateUsageSnapshot,
+} from "./chat.js";
 
 /** Validate a ControlState at runtime. */
 export function validateControlState(obj: unknown): ValidationResult {

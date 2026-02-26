@@ -2,11 +2,18 @@
   "mode": "idle",
   "current_objective": null,
   "working_memory_keys": [],
-  "recent_decisions": [],
+  "recent_decisions": [
+    {
+      "timestamp": "2026-02-25T18:47:56.976Z",
+      "action": "execute_run",
+      "reasoning": "E2E demo requested by user",
+      "outcome": "success"
+    }
+  ],
   "cumulative_budget": {
-    "elapsed_ms": 0,
-    "tokens_used": 0,
-    "tool_calls": 0,
-    "artifacts_mb": 0
+    "elapsed_ms": 500,
+    "tokens_used": 100,
+    "tool_calls": 2,
+    "artifacts_mb": 0.001
   }
 }

@@ -1,9 +1,9 @@
 {
-  "session_id": "",
+  "session_id": "8fce93c5-08b0-4a26-9cdb-372d4a77d46d",
   "agent_id": "agent-os",
   "interface": "cli",
-  "started_at": "",
-  "last_activity_at": "",
+  "started_at": "2026-02-25T18:47:56.965Z",
+  "last_activity_at": "2026-02-25T18:47:56.965Z",
   "active_run_id": null,
   "context": {}
 }

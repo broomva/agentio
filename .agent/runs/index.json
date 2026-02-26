@@ -1,4 +1,13 @@
 {
   "version": 1,
-  "entries": []
+  "entries": [
+    {
+      "run_id": "474e1275-46ad-4cf0-b620-84a5c388f6d2",
+      "agent_id": "agent-os",
+      "objective": "Execute E2E demo flow",
+      "status": "completed",
+      "started_at": "2026-02-25T18:47:56.970Z",
+      "finished_at": "2026-02-25T18:47:56.975Z"
+    }
+  ]
 }

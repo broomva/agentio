@@ -2,17 +2,21 @@
   "name": "@agentio/cli-agent",
   "version": "0.1.0",
   "private": true,
-  "description": "CLI agent — interactive command-line interface for agent runs",
+  "description": "CLI agent — interactive command-line interface with streaming",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "start": "bun run src/index.ts",
     "test": "bun test __tests__/*.test.ts"
   },
   "dependencies": {
-    "@agentio/agent-runtime": "workspace:*"
+    "@agentio/agent-runtime": "workspace:*",
+    "@agentio/protocol": "workspace:*",
+    "ai": "^6.0.0",
+    "@ai-sdk/anthropic": "^3.0.0"
   },
   "devDependencies": {
     "typescript": "^5.7.0"
